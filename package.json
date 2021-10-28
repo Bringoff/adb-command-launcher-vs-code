@@ -2,6 +2,7 @@
   "name": "adb-command-launcher",
   "displayName": "ADB Command Launcher",
   "description": "Launch ADB commands without typing them manually",
+  "icon": "images/logo.png",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.61.0"
