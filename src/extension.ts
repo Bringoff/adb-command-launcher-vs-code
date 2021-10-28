@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getCurrentPackageName } from './app_package_provider';
 import { clearAppData, clearAppDataAndRestart, getAppPackageName, killApp, restartApp, revokeAppPermissions, setAppPackageName, startApp, uninstallApp } from './commands';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -37,6 +38,10 @@ export function activate(context: vscode.ExtensionContext) {
   let revokePermissionsDisposable = vscode.commands.registerCommand('adb-command-launcher.revoke-permissions',
     () => revokeAppPermissions(context));
   context.subscriptions.push(revokePermissionsDisposable);
+
+  if (getCurrentPackageName(context.workspaceState).length === 0) {
+    setAppPackageName(context);
+  }
 }
 
 export function deactivate() { }
