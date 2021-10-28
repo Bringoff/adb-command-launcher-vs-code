@@ -10,6 +10,8 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:adb-command-launcher.get-app-package-name",
+    "onCommand:adb-command-launcher.set-app-package-name",
     "onCommand:adb-command-launcher.uninstall-app",
     "onCommand:adb-command-launcher.kill-app",
     "onCommand:adb-command-launcher.start-app",
@@ -22,6 +24,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "adb-command-launcher.get-app-package-name",
+        "title": "Show Current App Package Name",
+        "category": "ADB Command"
+      },
+      {
+        "command": "adb-command-launcher.set-app-package-name",
+        "title": "Set App Package Name",
+        "category": "ADB Command"
+      },
+      {
         "command": "adb-command-launcher.uninstall-app",
         "title": "Uninstall App",
         "category": "ADB Command"
@@ -29,32 +41,32 @@
       {
         "command": "adb-command-launcher.kill-app",
         "title": "Kill App",
-				"category": "ADB Command"
+        "category": "ADB Command"
       },
       {
         "command": "adb-command-launcher.start-app",
         "title": "Start App",
-				"category": "ADB Command"
+        "category": "ADB Command"
       },
       {
         "command": "adb-command-launcher.restart-app",
         "title": "Restart App",
-				"category": "ADB Command"
+        "category": "ADB Command"
       },
       {
         "command": "adb-command-launcher.clear-app-data",
         "title": "Clear App Data",
-				"category": "ADB Command"
+        "category": "ADB Command"
       },
       {
         "command": "adb-command-launcher.clear-app-data-restart",
         "title": "Clear App Data and Restart",
-				"category": "ADB Command"
+        "category": "ADB Command"
       },
       {
         "command": "adb-command-launcher.revoke-permissions",
         "title": "Revoke permissions",
-				"category": "ADB Command"
+        "category": "ADB Command"
       }
     ]
   },

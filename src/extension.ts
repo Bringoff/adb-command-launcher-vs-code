@@ -1,43 +1,42 @@
 import * as vscode from 'vscode';
+import { clearAppData, clearAppDataAndRestart, getAppPackageName, killApp, restartApp, revokeAppPermissions, setAppPackageName, startApp, uninstallApp } from './commands';
 
 export function activate(context: vscode.ExtensionContext) {
-	
-	console.log('Congratulations, your extension "adb-command-launcher" is now active!');
+  let getPackageDisposable = vscode.commands.registerCommand('adb-command-launcher.get-app-package-name',
+    () => getAppPackageName(context));
+  context.subscriptions.push(getPackageDisposable);
 
-	let uninstallDisposable = vscode.commands.registerCommand('adb-command-launcher.uninstall-app', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(uninstallDisposable);
+  let setPackageDisposable = vscode.commands.registerCommand('adb-command-launcher.set-app-package-name',
+    () => setAppPackageName(context));
+  context.subscriptions.push(setPackageDisposable);
 
-	let killDisposable = vscode.commands.registerCommand('adb-command-launcher.kill-app', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(killDisposable);
+  let uninstallDisposable = vscode.commands.registerCommand('adb-command-launcher.uninstall-app',
+    () => uninstallApp(context));
+  context.subscriptions.push(uninstallDisposable);
 
-	let startDisposable = vscode.commands.registerCommand('adb-command-launcher.start-app', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(startDisposable);
+  let killDisposable = vscode.commands.registerCommand('adb-command-launcher.kill-app',
+    () => killApp(context));
+  context.subscriptions.push(killDisposable);
 
-	let restartDisposable = vscode.commands.registerCommand('adb-command-launcher.restart-app', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(restartDisposable);
+  let startDisposable = vscode.commands.registerCommand('adb-command-launcher.start-app',
+    () => startApp(context));
+  context.subscriptions.push(startDisposable);
 
-	let clearDataDisposable = vscode.commands.registerCommand('adb-command-launcher.clear-app-data', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(clearDataDisposable);
+  let restartDisposable = vscode.commands.registerCommand('adb-command-launcher.restart-app',
+    () => restartApp(context));
+  context.subscriptions.push(restartDisposable);
 
-	let clearDataRestartDisposable = vscode.commands.registerCommand('adb-command-launcher.clear-app-data-restart', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(clearDataRestartDisposable);
+  let clearDataDisposable = vscode.commands.registerCommand('adb-command-launcher.clear-app-data',
+    () => clearAppData(context));
+  context.subscriptions.push(clearDataDisposable);
 
-	let revokePermissionsDisposable = vscode.commands.registerCommand('adb-command-launcher.revoke-permissions', () => {
-		vscode.window.showInformationMessage('Hello World from ADB Command Launcher!');
-	});
-	context.subscriptions.push(revokePermissionsDisposable);
+  let clearDataRestartDisposable = vscode.commands.registerCommand('adb-command-launcher.clear-app-data-restart',
+    () => clearAppDataAndRestart(context));
+  context.subscriptions.push(clearDataRestartDisposable);
+
+  let revokePermissionsDisposable = vscode.commands.registerCommand('adb-command-launcher.revoke-permissions',
+    () => revokeAppPermissions(context));
+  context.subscriptions.push(revokePermissionsDisposable);
 }
 
-export function deactivate() {}
+export function deactivate() { }
