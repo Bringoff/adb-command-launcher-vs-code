@@ -3,6 +3,8 @@
   "displayName": "ADB Command Launcher",
   "description": "Launch ADB commands without typing them manually",
   "icon": "images/logo.png",
+  "publisher": "artemkalachyan",
+  "repository": "https://github.com/Bringoff/adb-command-launcher-vs-code/issues",
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.61.0"
