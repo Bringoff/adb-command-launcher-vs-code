@@ -23,6 +23,10 @@ Wasn't tested on Windows yet, so if you encounter any issues, feel free to repor
 
 ## Release Notes
 
+## [0.1.1] - 2021-10-28
+### Added
+- Package name prompt on first extension activation in a workspace
+- 
 ## [0.1.0] - 2021-10-28
 ### Added
 - "*Uninstall App*", "*Kill App*", "*Start App*", "*Restart App*", "*Clear App Data*", "*Clear App Data and Restart*", "*Revoke permissions*" commands.
