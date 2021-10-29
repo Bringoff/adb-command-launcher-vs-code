@@ -36,6 +36,7 @@ export const setAppPackageName = async (context: vscode.ExtensionContext) => {
   }
 
   await setCurrentPackageName(context.workspaceState, inputPackage);
+  await vscode.window.showInformationMessage(`${inputPackage} package name selected`);
 };
 
 export const uninstallApp = async (context: vscode.ExtensionContext) =>

@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import { getCurrentPackageName } from './app_package_provider';
+import { findProjectAppPackageName } from './app_package_detector';
+import { getCurrentPackageName, setCurrentPackageName } from './app_package_provider';
 import { clearAppData, clearAppDataAndRestart, getAppPackageName, killApp, restartApp, revokeAppPermissions, setAppPackageName, startApp, uninstallApp } from './commands';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   let getPackageDisposable = vscode.commands.registerCommand('adb-command-launcher.get-app-package-name',
     () => getAppPackageName(context));
   context.subscriptions.push(getPackageDisposable);
@@ -39,9 +40,21 @@ export function activate(context: vscode.ExtensionContext) {
     () => revokeAppPermissions(context));
   context.subscriptions.push(revokePermissionsDisposable);
 
-  if (getCurrentPackageName(context.workspaceState).length === 0) {
-    setAppPackageName(context);
-  }
+  await checkWorkspaceAppPackageName(context);
 }
+
+const checkWorkspaceAppPackageName = async (context: vscode.ExtensionContext) => {
+  if (getCurrentPackageName(context.workspaceState).length === 0) {
+    const detectedAppPackageName = await findProjectAppPackageName(
+      vscode.workspace.workspaceFolders?.map((folder) => folder.uri) ?? []);
+
+    if (detectedAppPackageName.length > 0) {
+      await setCurrentPackageName(context.workspaceState, detectedAppPackageName);
+      vscode.window.showInformationMessage(`ADB Command Launcher: ${detectedAppPackageName} is detected package name`);
+    } else {
+      setAppPackageName(context);
+    }
+  }
+};
 
 export function deactivate() { }
