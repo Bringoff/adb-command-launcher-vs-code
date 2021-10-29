@@ -6,7 +6,7 @@ Adds the following ADB commands to VS Code:
 - Clear App Data
 - Clear App Data and Restart
 - Revoke permissions
-  
+
 And more to come.
 
 The primary way to invoke a command is searching for "*ADB Command*" in [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (macOS: **Cmd+Shift+P**, Windows/Linux: **Ctrl+Shift+P**)
@@ -15,7 +15,7 @@ The primary way to invoke a command is searching for "*ADB Command*" in [Command
 
 [ADB](https://developer.android.com/studio/command-line/adb) should be downloaded and added to the PATH environment variable.
 
-Currently this extension doesn't know anything about an opened project, so before running any ADB command an app package name (application id, i.e. `com.example.application`, usually placed in module-level `build.gradle` file) should be set. This can be done with *Set App Package Name* command. *Show Current App Package Name* displays the app package name previously set for current workspace. Selected app package name can be changed at any moment.
+This extension tries to detect application package name on first activation. But if you have custom Android project structure, you may need to set package name manually. This can be done with *Set App Package Name* command. Package name will be persisted for a workspace. *Show Current App Package Name* displays the app package name previously set for current workspace. Selected app package name can be changed at any moment.
 
 ## Known Issues
 
@@ -23,10 +23,14 @@ Wasn't tested on Windows yet, so if you encounter any issues, feel free to repor
 
 ## Release Notes
 
+## [0.2.0] - 2021-10-29
+### Added
+- Package name now can be detected automatically in simple cases
+
 ## [0.1.1] - 2021-10-28
 ### Added
 - Package name prompt on first extension activation in a workspace
-- 
+
 ## [0.1.0] - 2021-10-28
 ### Added
 - "*Uninstall App*", "*Kill App*", "*Start App*", "*Restart App*", "*Clear App Data*", "*Clear App Data and Restart*", "*Revoke permissions*" commands.
