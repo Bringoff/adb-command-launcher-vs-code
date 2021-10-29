@@ -7,17 +7,19 @@ export type BuildSuccessMessageFunction = (packageName: string) => string;
 export type BuildErrorMessageFunction = (packageName: string) => string;
 
 export interface SimpleCommandArgs {
+  isConnectedDeviceExpected: boolean,
   commands: Array<AdbCommandFunction>,
   successMessage: BuildSuccessMessageFunction,
   errorMessage: BuildErrorMessageFunction,
 }
 
 export const executeSimpleCommand = async (context: vscode.ExtensionContext, args: SimpleCommandArgs) => {
-  if (warnAboutMissingAppPackageName(context)) { return; }
   let currentPackageName = getCurrentPackageName(context.workspaceState);
 
+  if (args.isConnectedDeviceExpected && warnAboutMissingAppPackageName(context)) { return; }
+
   let targetDevice = await chooseDeviceToRunCommandOn(context);
-  if (targetDevice.length === 0) {
+  if (args.isConnectedDeviceExpected && targetDevice.length === 0) {
     vscode.window.showErrorMessage('Cannot choose target device to run command on');
     return;
   }

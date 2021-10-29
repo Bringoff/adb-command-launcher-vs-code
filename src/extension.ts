@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { findProjectAppPackageName } from './app_package_detector';
 import { getCurrentPackageName, setCurrentPackageName } from './app_package_provider';
-import { clearAppData, clearAppDataAndRestart, getAppPackageName, killApp, restartApp, revokeAppPermissions, setAppPackageName, startApp, uninstallApp } from './commands';
+import { clearAppData, clearAppDataAndRestart, getAppPackageName, killApp, restartAdbServer, restartApp, revokeAppPermissions, setAppPackageName, startApp, uninstallApp } from './commands';
 
 export async function activate(context: vscode.ExtensionContext) {
   let getPackageDisposable = vscode.commands.registerCommand('adb-command-launcher.get-app-package-name',
@@ -39,6 +39,10 @@ export async function activate(context: vscode.ExtensionContext) {
   let revokePermissionsDisposable = vscode.commands.registerCommand('adb-command-launcher.revoke-permissions',
     () => revokeAppPermissions(context));
   context.subscriptions.push(revokePermissionsDisposable);
+
+  let restartAdbServerDisposable = vscode.commands.registerCommand('adb-command-launcher.restart-adb-server',
+    () => restartAdbServer(context));
+  context.subscriptions.push(restartAdbServerDisposable);
 
   await checkWorkspaceAppPackageName(context);
 }

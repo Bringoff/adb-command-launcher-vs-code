@@ -21,7 +21,8 @@
     "onCommand:adb-command-launcher.restart-app",
     "onCommand:adb-command-launcher.clear-app-data",
     "onCommand:adb-command-launcher.clear-app-data-restart",
-    "onCommand:adb-command-launcher.revoke-permissions"
+    "onCommand:adb-command-launcher.revoke-permissions",
+    "onCommand:adb-command-launcher.restart-adb-server"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -69,6 +70,11 @@
       {
         "command": "adb-command-launcher.revoke-permissions",
         "title": "Revoke permissions",
+        "category": "ADB Command"
+      },
+      {
+        "command": "adb-command-launcher.restart-adb-server",
+        "title": "Restart ADB Server",
         "category": "ADB Command"
       }
     ]

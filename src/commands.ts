@@ -20,6 +20,10 @@ const buildStartCommand = (packageName: string, targetDevice: string): string =>
   return `adb -s ${targetDevice} shell monkey - p ${packageName} -c android.intent.category.LAUNCHER 1`;
 };
 
+const buildKillAdbServerCommand = (): string => 'adb kill-server';
+
+const buildStartAdbServerCommand = (): string => 'adb start-server';
+
 export const getAppPackageName = async (context: vscode.ExtensionContext) => {
   if (warnAboutMissingAppPackageName(context)) { return; }
 
@@ -41,6 +45,7 @@ export const setAppPackageName = async (context: vscode.ExtensionContext) => {
 
 export const uninstallApp = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildUninstallCommand,
     ],
@@ -50,6 +55,7 @@ export const uninstallApp = async (context: vscode.ExtensionContext) =>
 
 export const killApp = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildKillCommand,
     ],
@@ -59,6 +65,7 @@ export const killApp = async (context: vscode.ExtensionContext) =>
 
 export const startApp = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildStartCommand,
     ],
@@ -68,6 +75,7 @@ export const startApp = async (context: vscode.ExtensionContext) =>
 
 export const restartApp = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildKillCommand,
       buildStartCommand,
@@ -78,6 +86,7 @@ export const restartApp = async (context: vscode.ExtensionContext) =>
 
 export const clearAppData = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildClearDataCommand,
     ],
@@ -87,6 +96,7 @@ export const clearAppData = async (context: vscode.ExtensionContext) =>
 
 export const clearAppDataAndRestart = async (context: vscode.ExtensionContext) =>
   executeSimpleCommand(context, {
+    isConnectedDeviceExpected: true,
     commands: [
       buildClearDataCommand,
       buildKillCommand,
@@ -129,4 +139,16 @@ export const revokeAppPermissions = async (context: vscode.ExtensionContext) => 
   } else {
     vscode.window.showInformationMessage(`Revoked ${currentPackageName} permissions successfuly`);
   }
+};
+
+export const restartAdbServer = async (context: vscode.ExtensionContext) => {
+  executeSimpleCommand(context, {
+    isConnectedDeviceExpected: false,
+    commands: [
+      buildKillAdbServerCommand,
+      buildStartAdbServerCommand
+    ],
+    successMessage: () => `Restarted ADB Server successfuly`,
+    errorMessage: () => `Failed to restart ADB Server`,
+  });
 };
