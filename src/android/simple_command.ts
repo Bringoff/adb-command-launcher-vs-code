@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { getCurrentPackageName } from './app_package_provider';
-import { executeCommand } from './util/exec_runner';
+import { getCurrentAndroidPackageName } from '../app_package_provider';
+import { executeCommand } from '../util/exec_runner';
 
 export type AdbCommandFunction = (packageName: string, targetDevice: string) => string;
 export type BuildSuccessMessageFunction = (packageName: string) => string;
@@ -14,7 +14,7 @@ export interface SimpleCommandArgs {
 }
 
 export const executeSimpleCommand = async (context: vscode.ExtensionContext, args: SimpleCommandArgs) => {
-  let currentPackageName = getCurrentPackageName(context.workspaceState);
+  let currentPackageName = getCurrentAndroidPackageName(context.workspaceState);
 
   if (args.isConnectedDeviceExpected && warnAboutMissingAppPackageName(context)) { return; }
 
@@ -30,7 +30,7 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext, arg
 };
 
 export const warnAboutMissingAppPackageName = (context: vscode.ExtensionContext): boolean => {
-  let currentPackageName = getCurrentPackageName(context.workspaceState);
+  let currentPackageName = getCurrentAndroidPackageName(context.workspaceState);
 
   if (currentPackageName.length === 0) {
     vscode.window.showInformationMessage('No package name currently set');

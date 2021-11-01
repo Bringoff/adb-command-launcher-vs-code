@@ -2,14 +2,14 @@ import path = require('path');
 import { Uri } from 'vscode';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { VALID_PACKAGE_NAME_MATCHER } from './util/app_package_validator';
+import { VALID_PACKAGE_NAME_MATCHER } from '../util/app_package_validator';
 
 const POSSIBLE_BUILD_GRADLE_FILES = [
   'app/build.gradle',
   'android/app/build.gradle',
 ];
 
-export const findProjectAppPackageName = async (workspaceFolders: Array<Uri>): Promise<string> => {
+export const findProjectAndroidAppPackageName = async (workspaceFolders: Array<Uri>): Promise<string> => {
   let foldersToCheck = workspaceFolders.filter((uri) => uri.scheme === 'file');
 
   const readFile = promisify(fs.readFile);

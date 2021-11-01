@@ -1,4 +1,4 @@
-Adds the following ADB commands to VS Code:
+Adds the following Android ADB commands to VS Code:
 - Uninstall App
 - Kill App
 - Start App
@@ -9,13 +9,50 @@ Adds the following ADB commands to VS Code:
 
 And more to come.
 
-The primary way to invoke a command is searching for "*ADB Command*" in [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (macOS: **Cmd+Shift+P**, Windows/Linux: **Ctrl+Shift+P**)
+The primary way to invoke a command is searching for "*Android ADB Command*" or "*iOS IDB Command*" in [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) (macOS: **Cmd+Shift+P**, Windows/Linux: **Ctrl+Shift+P**)
 
 ## Requirements
 
-[ADB](https://developer.android.com/studio/command-line/adb) should be downloaded and added to the PATH environment variable.
+**For Android commands:** [ADB](https://developer.android.com/studio/command-line/adb) should be downloaded and added to the PATH environment variable.
 
-This extension tries to detect application package name on first activation. But if you have custom Android project structure, you may need to set package name manually. This can be done with *Set App Package Name* command. Package name will be persisted for a workspace. *Show Current App Package Name* displays the app package name previously set for current workspace. Selected app package name can be changed at any moment.
+**For iOS commands:** Xcode, Python 3.6+ and [IDB](https://fbidb.io/docs/installation) should be installed. 
+IDB installation should be pretty straightforward with [Homebrew](https://brew.sh/):
+
+```
+brew tap facebook/fb
+
+brew install idb-companion
+
+pip3 install fb-idb
+```
+**Unless** you are on a Mac with **Apple Silicon** chip (M1 and newer). In this case, follow [the issue and proposed solutions](https://github.com/facebook/idb/issues/649#issuecomment-939971092) on Github.
+The last working solution is building idb-companion from sources:
+```
+brew install protobuf 
+
+brew install grpc
+
+git clone git@github.com:facebook/idb.git
+
+cd idb
+
+pod install
+
+./idb_build.sh idb_companion build /opt/homebrew
+
+codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/FBDeviceControl.framework/Versions/A/Resources/libShimulator.dylib
+
+codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/FBSimulatorControl.framework/Versions/A/Resources/libShimulator.dylib
+
+codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/XCTestBootstrap.framework/Versions/A/Resources/libShimulator.dylib
+
+codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/FBControlCore.framework/Versions/A/Resources/libShimulator.dylib
+
+idb_companion --version
+```
+</br>
+</br>
+Bear in mind that the extension tries to detect application package name on first activation. But if you have custom project structure, you may need to set package name manually. This can be done with *Set App Package Name* command. Package name will be persisted for a workspace. *Show Current App Package Name* displays the app package name previously set for current workspace. Selected app package name can be changed at any moment.
 
 ## Known Issues
 

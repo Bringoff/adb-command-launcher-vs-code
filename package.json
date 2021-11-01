@@ -1,10 +1,10 @@
 {
-  "name": "adb-command-launcher",
-  "displayName": "ADB Command Launcher",
-  "description": "Launch ADB commands without typing them manually",
+  "name": "mobile-command-launcher",
+  "displayName": "Mobile Command Launcher",
+  "description": "Launch ADB/IDB commands without typing them manually",
   "icon": "images/logo.png",
   "publisher": "artemkalachyan",
-  "repository": "https://github.com/Bringoff/adb-command-launcher-vs-code/issues",
+  "repository": "https://github.com/Bringoff/mobile-command-launcher.-vs-code/issues",
   "version": "0.2.0",
   "engines": {
     "vscode": "^1.61.0"
@@ -13,69 +13,81 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:adb-command-launcher.get-app-package-name",
-    "onCommand:adb-command-launcher.set-app-package-name",
-    "onCommand:adb-command-launcher.uninstall-app",
-    "onCommand:adb-command-launcher.kill-app",
-    "onCommand:adb-command-launcher.start-app",
-    "onCommand:adb-command-launcher.restart-app",
-    "onCommand:adb-command-launcher.clear-app-data",
-    "onCommand:adb-command-launcher.clear-app-data-restart",
-    "onCommand:adb-command-launcher.revoke-permissions",
-    "onCommand:adb-command-launcher.restart-adb-server"
+    "onCommand:mobile-command-launcher.get-android-app-package-name",
+    "onCommand:mobile-command-launcher.set-android-app-package-name",
+    "onCommand:mobile-command-launcher.uninstall-android-app",
+    "onCommand:mobile-command-launcher.kill-android-app",
+    "onCommand:mobile-command-launcher.start-android-app",
+    "onCommand:mobile-command-launcher.restart-android-app",
+    "onCommand:mobile-command-launcher.clear-android-app-data",
+    "onCommand:mobile-command-launcher.clear-android-app-data-restart",
+    "onCommand:mobile-command-launcher.revoke-android-permissions",
+    "onCommand:mobile-command-launcher.restart-android-adb-server",
+    "onCommand:mobile-command-launcher.get-ios-app-package-name",
+    "onCommand:mobile-command-launcher.set-ios-app-package-name"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "adb-command-launcher.get-app-package-name",
+        "command": "mobile-command-launcher.get-android-app-package-name",
         "title": "Show Current App Package Name",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.set-app-package-name",
+        "command": "mobile-command-launcher.set-android-app-package-name",
         "title": "Set App Package Name",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.uninstall-app",
+        "command": "mobile-command-launcher.uninstall-android-app",
         "title": "Uninstall App",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.kill-app",
+        "command": "mobile-command-launcher.kill-android-app",
         "title": "Kill App",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.start-app",
+        "command": "mobile-command-launcher.start-android-app",
         "title": "Start App",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.restart-app",
+        "command": "mobile-command-launcher.restart-android-app",
         "title": "Restart App",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.clear-app-data",
+        "command": "mobile-command-launcher.clear-android-app-data",
         "title": "Clear App Data",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.clear-app-data-restart",
+        "command": "mobile-command-launcher.clear-android-app-data-restart",
         "title": "Clear App Data and Restart",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.revoke-permissions",
+        "command": "mobile-command-launcher.revoke-android-permissions",
         "title": "Revoke permissions",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
       },
       {
-        "command": "adb-command-launcher.restart-adb-server",
+        "command": "mobile-command-launcher.restart-android-adb-server",
         "title": "Restart ADB Server",
-        "category": "ADB Command"
+        "category": "Android ADB Command"
+      },
+      {
+        "command": "mobile-command-launcher.get-ios-app-package-name",
+        "title": "Show Current App Package Name",
+        "category": "iOS IDB Command"
+      },
+      {
+        "command": "mobile-command-launcher.set-ios-app-package-name",
+        "title": "Set App Package Name",
+        "category": "iOS IDB Command"
       }
     ]
   },
