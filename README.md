@@ -56,10 +56,11 @@ codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/XCTestBootst
 
 codesign --force --sign - --timestamp=none /opt/homebrew/Frameworks/FBControlCore.framework/Versions/A/Resources/libShimulator.dylib
 
-idb_companion --version
+pip3 install fb-idb
 ```
 </br>
 </br>
+
 Bear in mind that the extension tries to detect application package name on first activation. But if you have custom project structure, you may need to set package name manually. This can be done with *Set App Package Name* command. Package name will be persisted for a workspace. *Show Current App Package Name* displays the app package name previously set for current workspace. Selected app package name can be changed at any moment.
 
 ## Known Issues
