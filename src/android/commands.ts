@@ -83,7 +83,7 @@ export default class AndroidCommandsExecutor {
     if (warnAboutMissingApplicationId(this.context)) { return; }
     let currentAppId = getCurrentAndroidApplicationId(this.context.workspaceState);
 
-    let targetDevice = await chooseDeviceToRunCommandOn(this.context);
+    let targetDevice = await chooseDeviceToRunCommandOn();
     if (targetDevice.length === 0) {
       vscode.window.showErrorMessage('Cannot choose target device to run command on');
       return;

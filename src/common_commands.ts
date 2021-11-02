@@ -10,7 +10,7 @@ export const getApplicationId = async (getAppId: () => string) => {
 };
 
 export const setApplicationId = async (setAppId: (appId: string) => Thenable<void>) => {
-  let inputAppId = await vscode.window.showInputBox({ placeHolder: 'Type your application id (package name)' }) ?? '';
+  let inputAppId = await vscode.window.showInputBox({ placeHolder: 'Type your application id (package name or bundle id)' }) ?? '';
 
   if (inputAppId.length > 0 && !isValidApplicationId(inputAppId)) {
     await vscode.window.showErrorMessage('Invalid application id');
@@ -23,7 +23,7 @@ export const setApplicationId = async (setAppId: (appId: string) => Thenable<voi
   }
 };
 
-const warnAboutMissingAppId = (getAppId: () => string): boolean => {
+export const warnAboutMissingAppId = (getAppId: () => string): boolean => {
   let currentAppId = getAppId();
 
   if (currentAppId.length === 0) {

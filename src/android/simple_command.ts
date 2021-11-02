@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { getCurrentAndroidApplicationId } from '../app_identifier_provider';
+import { warnAboutMissingAppId } from '../common_commands';
 import { executeCommand } from '../util/exec_runner';
 
 export type AdbCommandFunction = (appId: string, targetDevice: string) => string;
@@ -18,7 +19,7 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext, arg
 
   if (args.isConnectedDeviceExpected && warnAboutMissingApplicationId(context)) { return; }
 
-  let targetDevice = await chooseDeviceToRunCommandOn(context);
+  let targetDevice = await chooseDeviceToRunCommandOn();
   if (args.isConnectedDeviceExpected && targetDevice.length === 0) {
     vscode.window.showErrorMessage('Cannot choose target device to run command on');
     return;
@@ -29,18 +30,10 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext, arg
     args.errorMessage(currentAppId));
 };
 
-export const warnAboutMissingApplicationId = (context: vscode.ExtensionContext): boolean => {
-  let currentAppId = getCurrentAndroidApplicationId(context.workspaceState);
+export const warnAboutMissingApplicationId = (context: vscode.ExtensionContext) =>
+  warnAboutMissingAppId(() => getCurrentAndroidApplicationId(context.workspaceState));
 
-  if (currentAppId.length === 0) {
-    vscode.window.showInformationMessage('No application id currently set');
-    return true;
-  }
-
-  return false;
-};
-
-export const chooseDeviceToRunCommandOn = async (context: vscode.ExtensionContext): Promise<string> => {
+export const chooseDeviceToRunCommandOn = async (): Promise<string> => {
   let activeDevices = (await executeCommand(`adb devices`) as string)
     .split('\n')
     .filter((_, index) => index > 0)
