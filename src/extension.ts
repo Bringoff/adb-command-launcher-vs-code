@@ -5,6 +5,8 @@ import { getCurrentAndroidApplicationId, getCurrentIOSApplicationId, setCurrentA
 import AndroidCommandsExecutor from './android/commands';
 import { Uri } from 'vscode';
 import IOSCommandsExecutor from './ios/commands';
+import { executeCommand } from './util/exec_runner';
+import * as os from 'os';
 
 export async function activate(context: vscode.ExtensionContext) {
   const androidCommandsExecutor = new AndroidCommandsExecutor(context);
@@ -16,27 +18,39 @@ export async function activate(context: vscode.ExtensionContext) {
 
 const registerAndroidCommands = (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
   let getPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.get-android-app-application-id',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.getApplicationId()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.getApplicationId()));
   context.subscriptions.push(getPackageDisposable);
 
   let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-android-app-application-id',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.setApplicationId()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.setApplicationId()));
   context.subscriptions.push(setPackageDisposable);
 
   let uninstallDisposable = vscode.commands.registerCommand('mobile-command-launcher.uninstall-android-app',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.uninstallApp()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.uninstallApp()));
   context.subscriptions.push(uninstallDisposable);
 
   let killDisposable = vscode.commands.registerCommand('mobile-command-launcher.kill-android-app',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.killApp()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.killApp()));
   context.subscriptions.push(killDisposable);
 
   let startDisposable = vscode.commands.registerCommand('mobile-command-launcher.start-android-app',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.startApp()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.startApp()));
   context.subscriptions.push(startDisposable);
 
   let restartDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-android-app',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartApp()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.restartApp()));
   context.subscriptions.push(restartDisposable);
 
   let clearDataDisposable = vscode.commands.registerCommand('mobile-command-launcher.clear-android-app-data',
@@ -44,15 +58,21 @@ const registerAndroidCommands = (context: vscode.ExtensionContext, commandsExecu
   context.subscriptions.push(clearDataDisposable);
 
   let clearDataRestartDisposable = vscode.commands.registerCommand('mobile-command-launcher.clear-android-app-data-restart',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.clearAppDataAndRestart()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.clearAppDataAndRestart()));
   context.subscriptions.push(clearDataRestartDisposable);
 
   let revokePermissionsDisposable = vscode.commands.registerCommand('mobile-command-launcher.revoke-android-permissions',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.revokeAppPermissions()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.revokeAppPermissions()));
   context.subscriptions.push(revokePermissionsDisposable);
 
   let restartAdbServerDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-android-adb-server',
-    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartAdbServer()));
+    () => checkAndroidCommandPrerequisites()
+      .then(() => checkAndroidApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.restartAdbServer()));
   context.subscriptions.push(restartAdbServerDisposable);
 };
 
@@ -62,21 +82,68 @@ const registerIOSCommands = (context: vscode.ExtensionContext, commandsExecutor:
   context.subscriptions.push(getPackageDisposable);
 
   let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-ios-app-application-id',
-    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.setApplicationId()));
+    () => checkIOSCommandPrerequisites()
+      .then(() => checkIOSApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.setApplicationId()));
   context.subscriptions.push(setPackageDisposable);
 
   let uninstallAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.uninstall-ios-app',
-    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.uninstallApp()));
+    () => checkIOSCommandPrerequisites()
+      .then(() => checkIOSApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.uninstallApp()));
   context.subscriptions.push(uninstallAppDisposable);
+
   let killAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.kill-ios-app',
-    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.killApp()));
+    () => checkIOSCommandPrerequisites()
+      .then(() => checkIOSApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.killApp()));
   context.subscriptions.push(killAppDisposable);
+
   let startAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.start-ios-app',
-    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.startApp()));
+    () => checkIOSCommandPrerequisites()
+      .then(() => checkIOSApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.startApp()));
   context.subscriptions.push(startAppDisposable);
+
   let restartAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-ios-app',
-    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartApp()));
+    () => checkIOSCommandPrerequisites()
+      .then(() => checkIOSApplicationId(context, commandsExecutor))
+      .then(() => commandsExecutor.restartApp()));
   context.subscriptions.push(restartAppDisposable);
+};
+
+const checkAndroidCommandPrerequisites = async () =>
+  checkCommandPrerequisites('adb devices',
+    'Cannot launch Android command, check if ADB added to your PATH');
+
+const checkIOSCommandPrerequisites = async () => {
+  const platform = os.type();
+
+  if (platform !== 'Darwin') {
+    await vscode.window.showErrorMessage(
+      'Looks like you are not on macOS, iOS commands are not available'
+    );
+
+    throw Error();
+  }
+
+  return checkCommandPrerequisites('idb list-targets',
+    'Cannot launch iOS command, check if IDB added to your PATH');
+};
+
+const checkCommandPrerequisites = async (checkCommand: string, errorMessage: string) => {
+  try {
+    await executeCommand(checkCommand);
+  } catch (err) {
+    const prerequisitesButton = 'Prerequisites';
+    const selected = await vscode.window.showErrorMessage(
+      errorMessage,
+      prerequisitesButton);
+    if (selected === prerequisitesButton) {
+      vscode.env.openExternal(
+        vscode.Uri.parse('https://github.com/Bringoff/adb-command-launcher-vs-code#requirements'));
+    }
+  }
 };
 
 const checkAndroidApplicationId = async (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
