@@ -1,11 +1,19 @@
-Adds the following Android ADB commands to VS Code:
-- Uninstall App
-- Kill App
-- Start App
-- Restart App
-- Clear App Data
-- Clear App Data and Restart
-- Revoke permissions
+Adds the following commands to manage mobile applications to VS Code:
+
+- Android (using ADB):
+  * Uninstall App
+  * Kill App
+  * Start App
+  * Restart App
+  * Clear App Data
+  * Clear App Data and Restart
+  * Revoke permissions
+
+- iOS (using IDB):
+  * Uninstall App
+  * Kill App
+  * Start App
+  * Restart App
 
 And more to come.
 
@@ -59,6 +67,11 @@ Bear in mind that the extension tries to detect application package name on firs
 Wasn't tested on Windows yet, so if you encounter any issues, feel free to report [through Github](https://github.com/Bringoff/adb-command-launcher-vs-code/issues)
 
 ## Release Notes
+
+## [0.3.0] - 2021-11-02
+### Added
+- "*Uninstall App*", "*Kill App*", "*Start App*", "*Restart App*", iOS commands ([IDB](https://fbidb.io/docs/installation) installation required)
+- iOS bundle identifier can be detected automatically in simple cases
 
 ## [0.2.0] - 2021-10-29
 ### Added
