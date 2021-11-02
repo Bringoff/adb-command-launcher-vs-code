@@ -22,7 +22,7 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext,
   args: SimpleCommandArgs) => {
   let currentAppId = getAppId(context.workspaceState);
 
-  if (args.isConnectedDeviceExpected && warnAboutMissingApplicationId(context)) { return; }
+  if (args.isConnectedDeviceExpected && warnAboutMissingApplicationId(context, getAppId)) { return; }
 
   let targetDeviceId = await chooseDeviceToRunOn();
   if (args.isConnectedDeviceExpected && targetDeviceId.length === 0) {
@@ -35,8 +35,9 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext,
     args.errorMessage(currentAppId));
 };
 
-export const warnAboutMissingApplicationId = (context: vscode.ExtensionContext) =>
-  warnAboutMissingAppId(() => getCurrentAndroidApplicationId(context.workspaceState));
+export const warnAboutMissingApplicationId = (context: vscode.ExtensionContext,
+  getAppId: GetAppIdFunction) =>
+  warnAboutMissingAppId(() => getAppId(context.workspaceState));
 
 const tryExecuteCommands = async (
   commands: Array<string>, successMessage: string, errorMessage: string) => {

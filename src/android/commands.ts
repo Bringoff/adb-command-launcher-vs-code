@@ -80,7 +80,7 @@ export default class AndroidCommandsExecutor {
     });
 
   revokeAppPermissions = async () => {
-    if (warnAboutMissingApplicationId(this.context)) { return; }
+    if (warnAboutMissingApplicationId(this.context, getCurrentAndroidApplicationId)) { return; }
     let currentAppId = getCurrentAndroidApplicationId(this.context.workspaceState);
 
     let targetDevice = await this.chooseDeviceToRunCommandOn();
