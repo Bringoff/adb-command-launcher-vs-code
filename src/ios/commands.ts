@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { getCurrentIOSPackageName, setCurrentIOSPackageName } from '../app_package_provider';
-import { getAppPackageName as commonGetAppPackageName, setAppPackageName as commonSetAppPackageName } from '../common_commands';
+import { getCurrentIOSApplicationId, setCurrentIOSApplicationId } from '../app_identifier_provider';
+import { getApplicationId as commonGetApplicationId, setApplicationId as commonSetApplicationId } from '../common_commands';
 
 export default class IOSCommandsExecutor {
   private context: vscode.ExtensionContext;
@@ -9,7 +9,7 @@ export default class IOSCommandsExecutor {
     this.context = context;
   }
 
-  getAppPackageName = () => commonGetAppPackageName(() => getCurrentIOSPackageName(this.context.workspaceState));
+  getApplicationId = () => commonGetApplicationId(() => getCurrentIOSApplicationId(this.context.workspaceState));
 
-  setAppPackageName = async () => commonSetAppPackageName((appPackageName) => setCurrentIOSPackageName(this.context.workspaceState, appPackageName));
+  setApplicationId = async () => commonSetApplicationId((appId) => setCurrentIOSApplicationId(this.context.workspaceState, appId));
 }

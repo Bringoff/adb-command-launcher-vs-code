@@ -2,14 +2,14 @@ import path = require('path');
 import { Uri } from 'vscode';
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { VALID_PACKAGE_NAME_MATCHER } from '../util/app_package_validator';
+import { VALID_APPLICATION_ID_MATCHER } from '../util/app_identifier_validator';
 
 const POSSIBLE_BUILD_GRADLE_FILES = [
   'app/build.gradle',
   'android/app/build.gradle',
 ];
 
-export const findProjectAndroidAppPackageName = async (workspaceFolders: Array<Uri>): Promise<string> => {
+export const findProjectAndroidApplicationId = async (workspaceFolders: Array<Uri>): Promise<string> => {
   let foldersToCheck = workspaceFolders.filter((uri) => uri.scheme === 'file');
 
   const readFile = promisify(fs.readFile);
@@ -22,17 +22,17 @@ export const findProjectAndroidAppPackageName = async (workspaceFolders: Array<U
         let possibleLines = openedFile.split('\n')
           .filter((line) => line.indexOf('applicationId ') >= 0)
           .map((line) => {
-            const packageNameMatch = line.match(VALID_PACKAGE_NAME_MATCHER);
-            if (packageNameMatch === null || packageNameMatch.length === 0) { return ''; }
-            return packageNameMatch[0];
+            const appIdMatch = line.match(VALID_APPLICATION_ID_MATCHER);
+            if (appIdMatch === null || appIdMatch.length === 0) { return ''; }
+            return appIdMatch[0];
           })
-          .filter((packageName) => packageName.length > 0);
+          .filter((appId) => appId.length > 0);
 
         if (possibleLines.length > 0) {
           return possibleLines[0];
         };
       } catch (err) {
-        console.log(`Cannot open file ${possiblePath}, will not get package name from it: ${err}`);
+        console.log(`Cannot open file ${possiblePath}, will not get application id from it: ${err}`);
         continue;
       }
     }

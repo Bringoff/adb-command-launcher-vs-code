@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { getCurrentAndroidPackageName, setCurrentAndroidPackageName } from '../app_package_provider';
-import { chooseDeviceToRunCommandOn, executeSimpleCommand, warnAboutMissingAppPackageName } from './simple_command';
+import { getCurrentAndroidApplicationId, setCurrentAndroidApplicationId } from '../app_identifier_provider';
+import { chooseDeviceToRunCommandOn, executeSimpleCommand, warnAboutMissingApplicationId } from './simple_command';
 import { executeCommand } from '../util/exec_runner';
-import { getAppPackageName as commonGetAppPackageName, setAppPackageName as commonSetAppPackageName } from '../common_commands';
+import { getApplicationId as commonGetApplicationId, setApplicationId as commonSetApplicationId } from '../common_commands';
 
 
 export default class AndroidCommandsExecutor {
@@ -12,9 +12,9 @@ export default class AndroidCommandsExecutor {
     this.context = context;
   }
 
-  getAppPackageName = () => commonGetAppPackageName(() => getCurrentAndroidPackageName(this.context.workspaceState));
+  getApplicationId = () => commonGetApplicationId(() => getCurrentAndroidApplicationId(this.context.workspaceState));
 
-  setAppPackageName = async () => commonSetAppPackageName((appPackageName) => setCurrentAndroidPackageName(this.context.workspaceState, appPackageName));
+  setApplicationId = async () => commonSetApplicationId((appId) => setCurrentAndroidApplicationId(this.context.workspaceState, appId));
 
   uninstallApp = async () =>
     executeSimpleCommand(this.context, {
@@ -22,8 +22,8 @@ export default class AndroidCommandsExecutor {
       commands: [
         this.buildUninstallCommand,
       ],
-      successMessage: (currentPackageName) => `Uninstalled ${currentPackageName} successfuly`,
-      errorMessage: (currentPackageName) => `Failed to uninstall ${currentPackageName}`,
+      successMessage: (currentAppId) => `Uninstalled ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to uninstall ${currentAppId}`,
     });
 
   killApp = async () =>
@@ -32,8 +32,8 @@ export default class AndroidCommandsExecutor {
       commands: [
         this.buildKillCommand,
       ],
-      successMessage: (currentPackageName) => `Killed ${currentPackageName} successfuly`,
-      errorMessage: (currentPackageName) => `Failed to kill ${currentPackageName}`,
+      successMessage: (currentAppId) => `Killed ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to kill ${currentAppId}`,
     });
 
   startApp = async () =>
@@ -42,8 +42,8 @@ export default class AndroidCommandsExecutor {
       commands: [
         this.buildStartCommand,
       ],
-      successMessage: (currentPackageName) => `Started ${currentPackageName} successfuly`,
-      errorMessage: (currentPackageName) => `Failed to start ${currentPackageName}`,
+      successMessage: (currentAppId) => `Started ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to start ${currentAppId}`,
     });
 
   restartApp = async () =>
@@ -53,8 +53,8 @@ export default class AndroidCommandsExecutor {
         this.buildKillCommand,
         this.buildStartCommand,
       ],
-      successMessage: (currentPackageName) => `Restarted ${currentPackageName} successfuly`,
-      errorMessage: (currentPackageName) => `Failed to restart ${currentPackageName}`,
+      successMessage: (currentAppId) => `Restarted ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to restart ${currentAppId}`,
     });
 
   clearAppData = async () =>
@@ -63,8 +63,8 @@ export default class AndroidCommandsExecutor {
       commands: [
         this.buildClearDataCommand,
       ],
-      successMessage: (currentPackageName) => `Cleared ${currentPackageName} data successfuly`,
-      errorMessage: (currentPackageName) => `Failed to clear ${currentPackageName} data`,
+      successMessage: (currentAppId) => `Cleared ${currentAppId} data successfuly`,
+      errorMessage: (currentAppId) => `Failed to clear ${currentAppId} data`,
     });
 
   clearAppDataAndRestart = async () =>
@@ -75,13 +75,13 @@ export default class AndroidCommandsExecutor {
         this.buildKillCommand,
         this.buildStartCommand
       ],
-      successMessage: (currentPackageName) => `Cleared ${currentPackageName} data and restarted successfuly`,
-      errorMessage: (currentPackageName) => `Failed to clear ${currentPackageName} data and restart`,
+      successMessage: (currentAppId) => `Cleared ${currentAppId} data and restarted successfuly`,
+      errorMessage: (currentAppId) => `Failed to clear ${currentAppId} data and restart`,
     });
 
   revokeAppPermissions = async () => {
-    if (warnAboutMissingAppPackageName(this.context)) { return; }
-    let currentPackageName = getCurrentAndroidPackageName(this.context.workspaceState);
+    if (warnAboutMissingApplicationId(this.context)) { return; }
+    let currentAppId = getCurrentAndroidApplicationId(this.context.workspaceState);
 
     let targetDevice = await chooseDeviceToRunCommandOn(this.context);
     if (targetDevice.length === 0) {
@@ -89,13 +89,13 @@ export default class AndroidCommandsExecutor {
       return;
     }
 
-    let grantedPermissions = (await executeCommand(`adb -s ${targetDevice} shell dumpsys package ${currentPackageName}`) as string)
+    let grantedPermissions = (await executeCommand(`adb -s ${targetDevice} shell dumpsys package ${currentAppId}`) as string)
       .split('\n')
       .filter((line) => line.indexOf('permission') >= 0 && line.indexOf('granted=true') >= 0)
       .map((line) => line.split(':')[0].trim());
 
     let revokeCommands = grantedPermissions.map(
-      (permission) => `adb -s ${targetDevice} shell pm revoke ${currentPackageName} ${permission}`);
+      (permission) => `adb -s ${targetDevice} shell pm revoke ${currentAppId} ${permission}`);
 
     let failedRevokes = 0;
     for (let command of revokeCommands) {
@@ -108,9 +108,9 @@ export default class AndroidCommandsExecutor {
 
     if (failedRevokes === revokeCommands.length) {
       vscode.window.showErrorMessage(
-        `Failed revoke ${currentPackageName} permissions, probably no runtime permission was granted`);
+        `Failed revoke ${currentAppId} permissions, probably no runtime permission was granted`);
     } else {
-      vscode.window.showInformationMessage(`Revoked ${currentPackageName} permissions successfuly`);
+      vscode.window.showInformationMessage(`Revoked ${currentAppId} permissions successfuly`);
     }
   };
 
@@ -126,20 +126,20 @@ export default class AndroidCommandsExecutor {
     });
   };
 
-  private buildUninstallCommand = (packageName: string, targetDevice: string): string => {
-    return `adb -s ${targetDevice} uninstall ${packageName}`;
+  private buildUninstallCommand = (appId: string, targetDevice: string): string => {
+    return `adb -s ${targetDevice} uninstall ${appId}`;
   };
 
-  private buildClearDataCommand = (packageName: string, targetDevice: string): string => {
-    return `adb -s ${targetDevice} shell pm clear ${packageName}`;
+  private buildClearDataCommand = (appId: string, targetDevice: string): string => {
+    return `adb -s ${targetDevice} shell pm clear ${appId}`;
   };
 
-  private buildKillCommand = (packageName: string, targetDevice: string): string => {
-    return `adb -s ${targetDevice} shell am force-stop ${packageName}`;
+  private buildKillCommand = (appId: string, targetDevice: string): string => {
+    return `adb -s ${targetDevice} shell am force-stop ${appId}`;
   };
 
-  private buildStartCommand = (packageName: string, targetDevice: string): string => {
-    return `adb -s ${targetDevice} shell monkey - p ${packageName} -c android.intent.category.LAUNCHER 1`;
+  private buildStartCommand = (appId: string, targetDevice: string): string => {
+    return `adb -s ${targetDevice} shell monkey - p ${appId} -c android.intent.category.LAUNCHER 1`;
   };
 
   private buildKillAdbServerCommand = (): string => 'adb kill-server';

@@ -1,33 +1,33 @@
 import * as vscode from 'vscode';
-import { isValidPackageName } from './util/app_package_validator';
+import { isValidApplicationId } from './util/app_identifier_validator';
 
 
-export const getAppPackageName = async (getAppPackageName: () => string) => {
-  if (warnAboutMissingAppPackageName(getAppPackageName)) { return; }
+export const getApplicationId = async (getAppId: () => string) => {
+  if (warnAboutMissingAppId(getAppId)) { return; }
 
-  let currentPackageName = getAppPackageName();
-  vscode.window.showInformationMessage(currentPackageName);
+  let currentAppId = getAppId();
+  vscode.window.showInformationMessage(currentAppId);
 };
 
-export const setAppPackageName = async (setAppPackageName: (appPackageName: string) => Thenable<void>) => {
-  let inputPackage = await vscode.window.showInputBox({ placeHolder: 'Type your application id (package name)' }) ?? '';
+export const setApplicationId = async (setAppId: (appId: string) => Thenable<void>) => {
+  let inputAppId = await vscode.window.showInputBox({ placeHolder: 'Type your application id (package name)' }) ?? '';
 
-  if (inputPackage.length > 0 && !isValidPackageName(inputPackage)) {
-    await vscode.window.showErrorMessage('Invalid App Package Name');
+  if (inputAppId.length > 0 && !isValidApplicationId(inputAppId)) {
+    await vscode.window.showErrorMessage('Invalid application id');
     return;
   }
 
-  await setAppPackageName(inputPackage);
-  if (inputPackage.length > 0) {
-    await vscode.window.showInformationMessage(`${inputPackage} package name selected`);
+  await setAppId(inputAppId);
+  if (inputAppId.length > 0) {
+    await vscode.window.showInformationMessage(`${inputAppId} application id selected`);
   }
 };
 
-const warnAboutMissingAppPackageName = (getAppPackageName: () => string): boolean => {
-  let currentPackageName = getAppPackageName();
+const warnAboutMissingAppId = (getAppId: () => string): boolean => {
+  let currentAppId = getAppId();
 
-  if (currentPackageName.length === 0) {
-    vscode.window.showInformationMessage('No package name currently set');
+  if (currentAppId.length === 0) {
+    vscode.window.showInformationMessage('No application id currently set');
     return true;
   }
 

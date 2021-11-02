@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { getCurrentAndroidPackageName } from '../app_package_provider';
+import { getCurrentAndroidApplicationId } from '../app_identifier_provider';
 import { executeCommand } from '../util/exec_runner';
 
-export type AdbCommandFunction = (packageName: string, targetDevice: string) => string;
-export type BuildSuccessMessageFunction = (packageName: string) => string;
-export type BuildErrorMessageFunction = (packageName: string) => string;
+export type AdbCommandFunction = (appId: string, targetDevice: string) => string;
+export type BuildSuccessMessageFunction = (appId: string) => string;
+export type BuildErrorMessageFunction = (appId: string) => string;
 
 export interface SimpleCommandArgs {
   isConnectedDeviceExpected: boolean,
@@ -14,9 +14,9 @@ export interface SimpleCommandArgs {
 }
 
 export const executeSimpleCommand = async (context: vscode.ExtensionContext, args: SimpleCommandArgs) => {
-  let currentPackageName = getCurrentAndroidPackageName(context.workspaceState);
+  let currentAppId = getCurrentAndroidApplicationId(context.workspaceState);
 
-  if (args.isConnectedDeviceExpected && warnAboutMissingAppPackageName(context)) { return; }
+  if (args.isConnectedDeviceExpected && warnAboutMissingApplicationId(context)) { return; }
 
   let targetDevice = await chooseDeviceToRunCommandOn(context);
   if (args.isConnectedDeviceExpected && targetDevice.length === 0) {
@@ -24,16 +24,16 @@ export const executeSimpleCommand = async (context: vscode.ExtensionContext, arg
     return;
   }
 
-  await tryExecuteCommands(args.commands.map((fn) => fn(currentPackageName, targetDevice)),
-    args.successMessage(currentPackageName),
-    args.errorMessage(currentPackageName));
+  await tryExecuteCommands(args.commands.map((fn) => fn(currentAppId, targetDevice)),
+    args.successMessage(currentAppId),
+    args.errorMessage(currentAppId));
 };
 
-export const warnAboutMissingAppPackageName = (context: vscode.ExtensionContext): boolean => {
-  let currentPackageName = getCurrentAndroidPackageName(context.workspaceState);
+export const warnAboutMissingApplicationId = (context: vscode.ExtensionContext): boolean => {
+  let currentAppId = getCurrentAndroidApplicationId(context.workspaceState);
 
-  if (currentPackageName.length === 0) {
-    vscode.window.showInformationMessage('No package name currently set');
+  if (currentAppId.length === 0) {
+    vscode.window.showInformationMessage('No application id currently set');
     return true;
   }
 

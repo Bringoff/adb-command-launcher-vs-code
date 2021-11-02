@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { findProjectAndroidAppPackageName } from './android/app_package_detector';
-import { findProjectIOSAppIdentifier } from './ios/app_package_detector';
-import { getCurrentAndroidPackageName, getCurrentIOSPackageName, setCurrentAndroidPackageName, setCurrentIOSPackageName } from './app_package_provider';
+import { findProjectAndroidApplicationId } from './android/app_package_name_detector';
+import { findProjectIOSBundleIdentifier } from './ios/app_bundle_id_detector';
+import { getCurrentAndroidApplicationId, getCurrentIOSApplicationId, setCurrentAndroidApplicationId, setCurrentIOSApplicationId } from './app_identifier_provider';
 import AndroidCommandsExecutor from './android/commands';
 import { Uri } from 'vscode';
 import IOSCommandsExecutor from './ios/commands';
@@ -13,88 +13,88 @@ export async function activate(context: vscode.ExtensionContext) {
   registerAndroidCommands(context, androidCommandsExecutor);
   registerIOSCommands(context, iOSCommandsExecutor);
 
-  await checkAndroidAppPackageName(context, androidCommandsExecutor);
+  await checkAndroidApplicationId(context, androidCommandsExecutor);
 }
 
 const registerAndroidCommands = (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
-  let getPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.get-android-app-package-name',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.getAppPackageName()));
+  let getPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.get-android-app-application-id',
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.getApplicationId()));
   context.subscriptions.push(getPackageDisposable);
 
-  let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-android-app-package-name',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.setAppPackageName()));
+  let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-android-app-application-id',
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.setApplicationId()));
   context.subscriptions.push(setPackageDisposable);
 
   let uninstallDisposable = vscode.commands.registerCommand('mobile-command-launcher.uninstall-android-app',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.uninstallApp()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.uninstallApp()));
   context.subscriptions.push(uninstallDisposable);
 
   let killDisposable = vscode.commands.registerCommand('mobile-command-launcher.kill-android-app',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.killApp()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.killApp()));
   context.subscriptions.push(killDisposable);
 
   let startDisposable = vscode.commands.registerCommand('mobile-command-launcher.start-android-app',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.startApp()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.startApp()));
   context.subscriptions.push(startDisposable);
 
   let restartDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-android-app',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.restartApp()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartApp()));
   context.subscriptions.push(restartDisposable);
 
   let clearDataDisposable = vscode.commands.registerCommand('mobile-command-launcher.clear-android-app-data',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.clearAppData()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.clearAppData()));
   context.subscriptions.push(clearDataDisposable);
 
   let clearDataRestartDisposable = vscode.commands.registerCommand('mobile-command-launcher.clear-android-app-data-restart',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.clearAppDataAndRestart()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.clearAppDataAndRestart()));
   context.subscriptions.push(clearDataRestartDisposable);
 
   let revokePermissionsDisposable = vscode.commands.registerCommand('mobile-command-launcher.revoke-android-permissions',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.revokeAppPermissions()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.revokeAppPermissions()));
   context.subscriptions.push(revokePermissionsDisposable);
 
   let restartAdbServerDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-android-adb-server',
-    () => checkAndroidAppPackageName(context, commandsExecutor).then(() => commandsExecutor.restartAdbServer()));
+    () => checkAndroidApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartAdbServer()));
   context.subscriptions.push(restartAdbServerDisposable);
 };
 
 const registerIOSCommands = (context: vscode.ExtensionContext, commandsExecutor: IOSCommandsExecutor) => {
-  let getPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.get-ios-app-package-name',
-    () => checkIOSAppPackageName(context, commandsExecutor).then(() => commandsExecutor.getAppPackageName()));
+  let getPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.get-ios-app-application-id',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.getApplicationId()));
   context.subscriptions.push(getPackageDisposable);
 
-  let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-ios-app-package-name',
-    () => checkIOSAppPackageName(context, commandsExecutor).then(() => commandsExecutor.setAppPackageName()));
+  let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-ios-app-application-id',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.setApplicationId()));
   context.subscriptions.push(setPackageDisposable);
 };
 
-const checkAndroidAppPackageName = async (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
-  await checkAppPackageName(context, () => getCurrentAndroidPackageName(context.workspaceState),
-    (workspaceFolders) => findProjectAndroidAppPackageName(workspaceFolders),
-    (appPackage) => setCurrentAndroidPackageName(context.workspaceState, appPackage),
-    commandsExecutor.setAppPackageName);
+const checkAndroidApplicationId = async (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
+  await checkApplicationId(context, () => getCurrentAndroidApplicationId(context.workspaceState),
+    (workspaceFolders) => findProjectAndroidApplicationId(workspaceFolders),
+    (appId) => setCurrentAndroidApplicationId(context.workspaceState, appId),
+    commandsExecutor.setApplicationId);
 };
 
-const checkIOSAppPackageName = async (context: vscode.ExtensionContext, commandsExecutor: IOSCommandsExecutor) => {
-  await checkAppPackageName(context, () => getCurrentIOSPackageName(context.workspaceState),
-    (workspaceFolders) => findProjectIOSAppIdentifier(workspaceFolders),
-    (appPackage) => setCurrentIOSPackageName(context.workspaceState, appPackage),
-    commandsExecutor.setAppPackageName);
+const checkIOSApplicationId = async (context: vscode.ExtensionContext, commandsExecutor: IOSCommandsExecutor) => {
+  await checkApplicationId(context, () => getCurrentIOSApplicationId(context.workspaceState),
+    (workspaceFolders) => findProjectIOSBundleIdentifier(workspaceFolders),
+    (appId) => setCurrentIOSApplicationId(context.workspaceState, appId),
+    commandsExecutor.setApplicationId);
 };
 
-const checkAppPackageName = async (context: vscode.ExtensionContext, getCurrentPackage: () => string,
-  findAppPackage: (workspaceFolders: Array<Uri>) => Promise<string>,
-  saveAppPackage: (appPackage: string) => Thenable<void>,
-  askForAppPackage: () => Promise<void>,) => {
+const checkApplicationId = async (context: vscode.ExtensionContext, getCurrentPackage: () => string,
+  findAppId: (workspaceFolders: Array<Uri>) => Promise<string>,
+  saveAppId: (appPackage: string) => Thenable<void>,
+  askForAppId: () => Promise<void>,) => {
   if (getCurrentPackage().length === 0) {
-    const detectedAppPackageName = await findAppPackage(
+    const detectedAppId = await findAppId(
       vscode.workspace.workspaceFolders?.map((folder) => folder.uri) ?? []);
 
-    if (detectedAppPackageName.length > 0) {
-      await saveAppPackage(detectedAppPackageName);
-      vscode.window.showInformationMessage(`ADB Command Launcher: ${detectedAppPackageName} is detected package name`);
+    if (detectedAppId.length > 0) {
+      await saveAppId(detectedAppId);
+      vscode.window.showInformationMessage(`Mobile Command Launcher: ${detectedAppId} is detected application id`);
     } else {
-      askForAppPackage();
+      askForAppId();
     }
   }
 };

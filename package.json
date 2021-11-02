@@ -13,8 +13,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:mobile-command-launcher.get-android-app-package-name",
-    "onCommand:mobile-command-launcher.set-android-app-package-name",
+    "onCommand:mobile-command-launcher.get-android-app-application-id",
+    "onCommand:mobile-command-launcher.set-android-app-application-id",
     "onCommand:mobile-command-launcher.uninstall-android-app",
     "onCommand:mobile-command-launcher.kill-android-app",
     "onCommand:mobile-command-launcher.start-android-app",
@@ -23,19 +23,19 @@
     "onCommand:mobile-command-launcher.clear-android-app-data-restart",
     "onCommand:mobile-command-launcher.revoke-android-permissions",
     "onCommand:mobile-command-launcher.restart-android-adb-server",
-    "onCommand:mobile-command-launcher.get-ios-app-package-name",
-    "onCommand:mobile-command-launcher.set-ios-app-package-name"
+    "onCommand:mobile-command-launcher.get-ios-app-application-id",
+    "onCommand:mobile-command-launcher.set-ios-app-application-id"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "mobile-command-launcher.get-android-app-package-name",
+        "command": "mobile-command-launcher.get-android-app-application-id",
         "title": "Show Current App Package Name",
         "category": "Android ADB Command"
       },
       {
-        "command": "mobile-command-launcher.set-android-app-package-name",
+        "command": "mobile-command-launcher.set-android-app-application-id",
         "title": "Set App Package Name",
         "category": "Android ADB Command"
       },
@@ -80,13 +80,13 @@
         "category": "Android ADB Command"
       },
       {
-        "command": "mobile-command-launcher.get-ios-app-package-name",
-        "title": "Show Current App Package Name",
+        "command": "mobile-command-launcher.get-ios-app-application-id",
+        "title": "Show Current Bundle Identifier",
         "category": "iOS IDB Command"
       },
       {
-        "command": "mobile-command-launcher.set-ios-app-package-name",
-        "title": "Set App Package Name",
+        "command": "mobile-command-launcher.set-ios-app-application-id",
+        "title": "Set Bundle Identifier",
         "category": "iOS IDB Command"
       }
     ]
