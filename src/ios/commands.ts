@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { executeSimpleCommand } from '../simple_command';
 import { getCurrentIOSApplicationId, setCurrentIOSApplicationId } from '../app_identifier_provider';
 import { getApplicationId as commonGetApplicationId, setApplicationId as commonSetApplicationId } from '../common_commands';
 import { executeCommand } from '../util/exec_runner';
@@ -14,7 +15,60 @@ export default class IOSCommandsExecutor {
 
   setApplicationId = async () => commonSetApplicationId((appId) => setCurrentIOSApplicationId(this.context.workspaceState, appId));
 
-  private chooseDeviceToRunCommandOn = async (): Promise<Device | null> => {
+  uninstallApp = async () =>
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentIOSApplicationId, {
+      isConnectedDeviceExpected: true,
+      commands: [
+        this.buildUninstallCommand,
+      ],
+      successMessage: (currentAppId) => `Uninstalled ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to uninstall ${currentAppId}`,
+    });
+
+  killApp = async () =>
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentIOSApplicationId, {
+      isConnectedDeviceExpected: true,
+      commands: [
+        this.buildKillCommand,
+      ],
+      successMessage: (currentAppId) => `Killed ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to kill ${currentAppId}`,
+    });
+
+  startApp = async () =>
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentIOSApplicationId, {
+      isConnectedDeviceExpected: true,
+      commands: [
+        this.buildStartCommand,
+      ],
+      successMessage: (currentAppId) => `Started ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to start ${currentAppId}`,
+    });
+
+  restartApp = async () =>
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentIOSApplicationId, {
+      isConnectedDeviceExpected: true,
+      commands: [
+        this.buildKillCommand,
+        this.buildStartCommand,
+      ],
+      successMessage: (currentAppId) => `Restarted ${currentAppId} successfuly`,
+      errorMessage: (currentAppId) => `Failed to restart ${currentAppId}`,
+    });
+
+  private buildUninstallCommand = (appId: string, targetDevice: string): string => {
+    return `idb connect ${targetDevice} && idb uninstall ${appId}`;
+  };
+
+  private buildKillCommand = (appId: string, targetDevice: string): string => {
+    return `idb connect ${targetDevice} && idb terminate ${appId}`;
+  };
+
+  private buildStartCommand = (appId: string, targetDevice: string): string => {
+    return `idb connect ${targetDevice} && idb launch ${appId}`;
+  };
+
+  private chooseDeviceToRunCommandOn = async (): Promise<string> => {
     let devices = (await executeCommand('idb list-targets') as string)
       .split('\n')
       .filter((line) => line.length > 0)
@@ -42,11 +96,11 @@ export default class IOSCommandsExecutor {
       }
     );
 
-    if (!userSelectedDeviceLabel) { return null; }
+    if (!userSelectedDeviceLabel) { return ''; }
     const userSelectedDeviceName = userSelectedDeviceLabel.substring(0, userSelectedDeviceLabel.indexOf('|')).trim();
 
     const userSelectedDevice = devices.filter((device) => device.name === userSelectedDeviceName)[0];
-    return userSelectedDevice;
+    return userSelectedDevice.uuid;
   };
 }
 

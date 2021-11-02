@@ -12,8 +12,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerAndroidCommands(context, androidCommandsExecutor);
   registerIOSCommands(context, iOSCommandsExecutor);
-
-  await checkAndroidApplicationId(context, androidCommandsExecutor);
 }
 
 const registerAndroidCommands = (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
@@ -66,23 +64,36 @@ const registerIOSCommands = (context: vscode.ExtensionContext, commandsExecutor:
   let setPackageDisposable = vscode.commands.registerCommand('mobile-command-launcher.set-ios-app-application-id',
     () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.setApplicationId()));
   context.subscriptions.push(setPackageDisposable);
+
+  let uninstallAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.uninstall-ios-app',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.uninstallApp()));
+  context.subscriptions.push(uninstallAppDisposable);
+  let killAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.kill-ios-app',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.killApp()));
+  context.subscriptions.push(killAppDisposable);
+  let startAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.start-ios-app',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.startApp()));
+  context.subscriptions.push(startAppDisposable);
+  let restartAppDisposable = vscode.commands.registerCommand('mobile-command-launcher.restart-ios-app',
+    () => checkIOSApplicationId(context, commandsExecutor).then(() => commandsExecutor.restartApp()));
+  context.subscriptions.push(restartAppDisposable);
 };
 
 const checkAndroidApplicationId = async (context: vscode.ExtensionContext, commandsExecutor: AndroidCommandsExecutor) => {
-  await checkApplicationId(context, () => getCurrentAndroidApplicationId(context.workspaceState),
+  await checkApplicationId(() => getCurrentAndroidApplicationId(context.workspaceState),
     (workspaceFolders) => findProjectAndroidApplicationId(workspaceFolders),
     (appId) => setCurrentAndroidApplicationId(context.workspaceState, appId),
     commandsExecutor.setApplicationId);
 };
 
 const checkIOSApplicationId = async (context: vscode.ExtensionContext, commandsExecutor: IOSCommandsExecutor) => {
-  await checkApplicationId(context, () => getCurrentIOSApplicationId(context.workspaceState),
+  await checkApplicationId(() => getCurrentIOSApplicationId(context.workspaceState),
     (workspaceFolders) => findProjectIOSBundleIdentifier(workspaceFolders),
     (appId) => setCurrentIOSApplicationId(context.workspaceState, appId),
     commandsExecutor.setApplicationId);
 };
 
-const checkApplicationId = async (context: vscode.ExtensionContext, getCurrentPackage: () => string,
+const checkApplicationId = async (getCurrentPackage: () => string,
   findAppId: (workspaceFolders: Array<Uri>) => Promise<string>,
   saveAppId: (appPackage: string) => Thenable<void>,
   askForAppId: () => Promise<void>,) => {

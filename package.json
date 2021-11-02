@@ -24,7 +24,11 @@
     "onCommand:mobile-command-launcher.revoke-android-permissions",
     "onCommand:mobile-command-launcher.restart-android-adb-server",
     "onCommand:mobile-command-launcher.get-ios-app-application-id",
-    "onCommand:mobile-command-launcher.set-ios-app-application-id"
+    "onCommand:mobile-command-launcher.set-ios-app-application-id",
+    "onCommand:mobile-command-launcher.uninstall-ios-app",
+    "onCommand:mobile-command-launcher.kill-ios-app",
+    "onCommand:mobile-command-launcher.start-ios-app",
+    "onCommand:mobile-command-launcher.restart-ios-app"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -87,6 +91,26 @@
       {
         "command": "mobile-command-launcher.set-ios-app-application-id",
         "title": "Set Bundle Identifier",
+        "category": "iOS IDB Command"
+      },
+      {
+        "command": "mobile-command-launcher.uninstall-ios-app",
+        "title": "Uninstall App",
+        "category": "iOS IDB Command"
+      },
+      {
+        "command": "mobile-command-launcher.kill-ios-app",
+        "title": "Kill App",
+        "category": "iOS IDB Command"
+      },
+      {
+        "command": "mobile-command-launcher.start-ios-app",
+        "title": "Start App",
+        "category": "iOS IDB Command"
+      },
+      {
+        "command": "mobile-command-launcher.restart-ios-app",
+        "title": "Restart App",
         "category": "iOS IDB Command"
       }
     ]

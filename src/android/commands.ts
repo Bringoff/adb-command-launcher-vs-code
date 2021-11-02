@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getCurrentAndroidApplicationId, setCurrentAndroidApplicationId } from '../app_identifier_provider';
-import { chooseDeviceToRunCommandOn, executeSimpleCommand, warnAboutMissingApplicationId } from './simple_command';
+import { executeSimpleCommand, warnAboutMissingApplicationId } from '../simple_command';
 import { executeCommand } from '../util/exec_runner';
 import { getApplicationId as commonGetApplicationId, setApplicationId as commonSetApplicationId } from '../common_commands';
 
@@ -17,7 +17,7 @@ export default class AndroidCommandsExecutor {
   setApplicationId = async () => commonSetApplicationId((appId) => setCurrentAndroidApplicationId(this.context.workspaceState, appId));
 
   uninstallApp = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildUninstallCommand,
@@ -27,7 +27,7 @@ export default class AndroidCommandsExecutor {
     });
 
   killApp = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildKillCommand,
@@ -37,7 +37,7 @@ export default class AndroidCommandsExecutor {
     });
 
   startApp = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildStartCommand,
@@ -47,7 +47,7 @@ export default class AndroidCommandsExecutor {
     });
 
   restartApp = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildKillCommand,
@@ -58,7 +58,7 @@ export default class AndroidCommandsExecutor {
     });
 
   clearAppData = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildClearDataCommand,
@@ -68,7 +68,7 @@ export default class AndroidCommandsExecutor {
     });
 
   clearAppDataAndRestart = async () =>
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: true,
       commands: [
         this.buildClearDataCommand,
@@ -83,7 +83,7 @@ export default class AndroidCommandsExecutor {
     if (warnAboutMissingApplicationId(this.context)) { return; }
     let currentAppId = getCurrentAndroidApplicationId(this.context.workspaceState);
 
-    let targetDevice = await chooseDeviceToRunCommandOn();
+    let targetDevice = await this.chooseDeviceToRunCommandOn();
     if (targetDevice.length === 0) {
       vscode.window.showErrorMessage('Cannot choose target device to run command on');
       return;
@@ -115,7 +115,7 @@ export default class AndroidCommandsExecutor {
   };
 
   restartAdbServer = async () => {
-    executeSimpleCommand(this.context, {
+    executeSimpleCommand(this.context, this.chooseDeviceToRunCommandOn, getCurrentAndroidApplicationId, {
       isConnectedDeviceExpected: false,
       commands: [
         this.buildKillAdbServerCommand,
@@ -124,6 +124,26 @@ export default class AndroidCommandsExecutor {
       successMessage: () => `Restarted ADB Server successfuly`,
       errorMessage: () => `Failed to restart ADB Server`,
     });
+  };
+
+  private chooseDeviceToRunCommandOn = async (): Promise<string> => {
+    let activeDevices = (await executeCommand(`adb devices`) as string)
+      .split('\n')
+      .filter((_, index) => index > 0)
+      .map((line) => line.split('\t')[0].trim())
+      .filter((line) => line.length > 0);
+    if (activeDevices.length === 0) { return ''; }
+    if (activeDevices.length === 1) { return activeDevices[0]; }
+
+    let userSelectedDevice = await vscode.window.showQuickPick(
+      activeDevices,
+      {
+        title: 'Choose target device',
+        canPickMany: false,
+      }
+    );
+
+    return userSelectedDevice ?? '';
   };
 
   private buildUninstallCommand = (appId: string, targetDevice: string): string => {
@@ -139,7 +159,7 @@ export default class AndroidCommandsExecutor {
   };
 
   private buildStartCommand = (appId: string, targetDevice: string): string => {
-    return `adb -s ${targetDevice} shell monkey - p ${appId} -c android.intent.category.LAUNCHER 1`;
+    return `adb -s ${targetDevice} shell monkey -p ${appId} -c android.intent.category.LAUNCHER 1`;
   };
 
   private buildKillAdbServerCommand = (): string => 'adb kill-server';
