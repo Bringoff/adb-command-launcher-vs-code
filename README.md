@@ -69,6 +69,10 @@ Wasn't tested on Windows yet, so if you encounter any issues, feel free to repor
 
 ## Release Notes
 
+## [0.3.1] - 2021-11-10
+### Fixed
+- Removing iOS apps sometimes failed because of multiple IDB device connections, this is now resolved
+
 ## [0.3.0] - 2021-11-02
 ### Added
 - "*Uninstall App*", "*Kill App*", "*Start App*", "*Restart App*", iOS commands ([IDB](https://fbidb.io/docs/installation) installation required)
