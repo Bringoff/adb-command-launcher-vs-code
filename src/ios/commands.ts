@@ -57,15 +57,15 @@ export default class IOSCommandsExecutor {
     });
 
   private buildUninstallCommand = (appId: string, targetDevice: string): string => {
-    return `idb connect ${targetDevice} && idb uninstall ${appId}`;
+    return `idb connect ${targetDevice} && idb uninstall --udid ${targetDevice} ${appId}`;
   };
 
   private buildKillCommand = (appId: string, targetDevice: string): string => {
-    return `idb connect ${targetDevice} && idb terminate ${appId}`;
+    return `idb connect ${targetDevice} && idb terminate --udid ${targetDevice} ${appId}`;
   };
 
   private buildStartCommand = (appId: string, targetDevice: string): string => {
-    return `idb connect ${targetDevice} && idb launch ${appId}`;
+    return `idb connect ${targetDevice} && idb launch --udid ${targetDevice} ${appId}`;
   };
 
   private chooseDeviceToRunCommandOn = async (): Promise<string> => {
